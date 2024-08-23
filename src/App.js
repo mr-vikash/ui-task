@@ -1,23 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Dashboard from './Dashboard';
+import initialData from './dashboardData.json';
+import NavigationBar from './Navbar'; // Import the NavigationBar
 
 function App() {
+  const [categories, setCategories] = useState(initialData.categories);
+
+  const handleAddWidget = (categoryId) => {
+    const widgetTitle = prompt('Enter widget title');
+    const widgetContent = prompt('Enter widget content');
+    const newWidget = {
+      id: Date.now(),
+      title: widgetTitle,
+      content: widgetContent
+    };
+
+    setCategories(categories.map(category =>
+      category.id === categoryId
+        ? { ...category, widgets: [...category.widgets, newWidget] }
+        : category
+    ));
+  };
+
+  const handleRemoveWidget = (categoryId, widgetId) => {
+    setCategories(categories.map(category =>
+      category.id === categoryId
+        ? { ...category, widgets: category.widgets.filter(widget => widget.id !== widgetId) }
+        : category
+    ));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <NavigationBar /> {/* Add the NavigationBar component */}
+      <div className="container mt-4">
+        <h1>Dashboard</h1>
+        <Dashboard
+          categories={categories}
+          onAddWidget={handleAddWidget}
+          onRemoveWidget={handleRemoveWidget}
+        />
+      </div>
     </div>
   );
 }
